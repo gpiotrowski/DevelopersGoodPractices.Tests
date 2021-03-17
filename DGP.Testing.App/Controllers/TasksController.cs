@@ -25,9 +25,17 @@ namespace DGP.Testing.App.Controllers
         }
 
         [HttpPost]
-        public async Task Add(UserTaskDto newUserTask)
+        public async Task<IActionResult> Add(UserTaskDto newUserTask)
         {
-            await _tasksService.Add(newUserTask);
+            try
+            {
+                await _tasksService.Add(newUserTask);
+                return Ok();
+            }
+            catch (DuplicatedTaskTextException e)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpDelete("{taskId}")]

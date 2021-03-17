@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DGP.Testing.App.Dtos;
 using DGP.Testing.App.Models;
 using DGP.Testing.App.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DGP.Testing.App.Services
 {
@@ -31,6 +32,12 @@ namespace DGP.Testing.App.Services
 
         public async Task Add(UserTaskDto newTask)
         {
+            var allTasks = await _taskRepository.GetAll();
+            if (allTasks.Any(x => x.Text.Equals(newTask.Text)))
+            {
+                throw new DuplicatedTaskTextException();
+            }
+
             var task = new UserTask()
             {
                 Id = Guid.NewGuid(),

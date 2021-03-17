@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
 
   public newTaskText: string;
   public tasks: UserTask[] = [];
+  public displayError: boolean = false;
 
   constructor(private http: HttpClient) {    
   }
@@ -26,8 +27,13 @@ export class AppComponent implements OnInit {
     };
     this.newTaskText = "";
 
-    await this.http.post("https://localhost:5001/api/tasks", newTask).toPromise();
-    await this.getAllTasks();
+    try {
+      await this.http.post("https://localhost:5001/api/tasks", newTask).toPromise();
+      await this.getAllTasks();
+    }
+    catch {
+      this.displayError = true;
+    }
   }
 
   private async getAllTasks(): Promise<void> {

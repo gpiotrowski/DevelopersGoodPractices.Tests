@@ -2,6 +2,8 @@
 
 <button (click)="addTask()">Add task</button>
 
+<span *ngIf="displayError">Something went wrong :(</span>
+
 <ul>
   <li *ngFor="let task of tasks">{{ task.text }} <button (click)="removeTask(task.id)">Remove</button></li>
 </ul>
