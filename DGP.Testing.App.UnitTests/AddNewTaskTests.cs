@@ -12,14 +12,20 @@ namespace DGP.Testing.App.UnitTests
 {
     public class AddNewTaskTests
     {
+        private Mock<ITaskRepository> _tasksRepositoryMock;
+        private TasksService _service;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _tasksRepositoryMock = new Mock<ITaskRepository>();
+            _service = new TasksService(_tasksRepositoryMock.Object);
+        }
+
         [Test]
         public async Task AddingNewTaskShouldSaveItInRepository()
         {
             // Arrange
-            var tasksRepositoryMock = new Mock<ITaskRepository>();
-
-            var service = new TasksService(tasksRepositoryMock.Object);
-
             var existingTasks = new List<UserTask>()
             {
                 new UserTask()
@@ -30,7 +36,7 @@ namespace DGP.Testing.App.UnitTests
                 }
             };
 
-            tasksRepositoryMock.Setup(x => x.GetAll()).ReturnsAsync(existingTasks);
+            _tasksRepositoryMock.Setup(x => x.GetAll()).ReturnsAsync(existingTasks);
 
             var newTaskDto = new UserTaskDto()
             {
@@ -38,10 +44,35 @@ namespace DGP.Testing.App.UnitTests
             };
 
             // Act
-            await service.Add(newTaskDto);
+            await _service.Add(newTaskDto);
 
             // Assert
-            tasksRepositoryMock.Verify(x => x.Add(It.IsAny<UserTask>()), Times.Once);
+            _tasksRepositoryMock.Verify(x => x.Add(It.IsAny<UserTask>()), Times.Once);
+        }
+
+        [Test]
+        public void AddingTaskWithExistingTextShouldThrowException()
+        {
+            // Arrange
+            var existingTasks = new List<UserTask>()
+            {
+                new UserTask()
+                {
+                    Id = Guid.NewGuid(),
+                    Text = "Task",
+                    CreatedAt = DateTime.UtcNow
+                }
+            };
+
+            _tasksRepositoryMock.Setup(x => x.GetAll()).ReturnsAsync(existingTasks);
+
+            var newTaskDto = new UserTaskDto()
+            {
+                Text = "Task"
+            };
+
+            // Act & Assert
+            Assert.ThrowsAsync<DuplicatedTaskTextException>(() => _service.Add(newTaskDto));
         }
     }
 }
