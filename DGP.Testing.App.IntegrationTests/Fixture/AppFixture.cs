@@ -42,6 +42,11 @@ namespace DGP.Testing.App.IntegrationTests.Fixture
             return _httpClient;
         }
 
+        public DatabaseFixture GetDatabase()
+        {
+            return _databaseFixture;
+        }
+
         public void Dispose()
         {
             _httpClient?.Dispose();

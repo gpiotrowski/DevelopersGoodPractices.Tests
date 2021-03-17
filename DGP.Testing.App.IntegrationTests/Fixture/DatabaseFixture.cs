@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+using DGP.Testing.App.Models;
 using DGP.Testing.App.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,12 @@ namespace DGP.Testing.App.IntegrationTests.Fixture
             var serviceProvider = serviceCollection.BuildServiceProvider();
             _dbContext = serviceProvider.GetService<TasksDbContext>();
             _dbContext.Database.Migrate();
+        }
+
+        public async Task AddTask(UserTask task)
+        {
+            await _dbContext.Tasks.AddAsync(task);
+            await _dbContext.SaveChangesAsync();
         }
 
         public void Dispose()
