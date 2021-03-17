@@ -74,5 +74,29 @@ namespace DGP.Testing.App.UnitTests
             // Act & Assert
             Assert.ThrowsAsync<DuplicatedTaskTextException>(() => _service.Add(newTaskDto));
         }
+
+        [Test]
+        [TestCase("Task with longer text than usual")]
+        [TestCase("@H4CK3R!")]
+        [TestCase("🦃")]
+        public async Task ComplicatedTaskTextsShouldBeSavedSuccessfully(string taskText)
+        {
+            // Arrange
+            var existingTasks = new List<UserTask>();
+
+            _tasksRepositoryMock.Setup(x => x.GetAll()).ReturnsAsync(existingTasks);
+
+            var newTaskDto = new UserTaskDto()
+            {
+                Text = taskText
+            };
+
+            // Act
+            await _service.Add(newTaskDto);
+
+            // Assert
+            _tasksRepositoryMock.Verify(x => x.Add(It.IsAny<UserTask>()), Times.Once);
+        }
+
     }
 }
