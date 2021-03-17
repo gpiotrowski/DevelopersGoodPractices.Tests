@@ -1,9 +1,9 @@
-<input [(ngModel)]="newTaskText">
+<input [(ngModel)]="newTaskText" data-cy="new-task-input">
 
-<button (click)="addTask()">Add task</button>
+<button (click)="addTask()" data-cy="add-task-button">Add task</button>
 
 <span *ngIf="displayError">Something went wrong :(</span>
 
-<ul>
-  <li *ngFor="let task of tasks">{{ task.text }} <button (click)="removeTask(task.id)">Remove</button></li>
+<ul data-cy="task-list">
+  <li *ngFor="let task of tasks">{{ task.text }} <button (click)="removeTask(task.id)" data-cy="remove-task-button">Remove</button></li>
 </ul>
