@@ -15,12 +15,16 @@ namespace DGP.Testing.App.UnitTests
     {
         private Mock<ITaskRepository> _tasksRepositoryMock;
         private TasksService _service;
+        private Mock<GetCurrentDateTime> _getCurrentDateTime;
 
         [SetUp]
         public void SetUp()
         {
             _tasksRepositoryMock = new Mock<ITaskRepository>();
-            _service = new TasksService(_tasksRepositoryMock.Object);
+            _getCurrentDateTime = new Mock<GetCurrentDateTime>();
+            _getCurrentDateTime.Setup(x => x()).Returns(() => DateTime.UtcNow);;
+
+            _service = new TasksService(_tasksRepositoryMock.Object, _getCurrentDateTime.Object);
         }
 
         [Test]
@@ -116,6 +120,28 @@ namespace DGP.Testing.App.UnitTests
 
             // Assert
             _tasksRepositoryMock.Verify(x => x.Add(It.IsAny<UserTask>()), Times.Once);
+        }
+
+        [Test]
+        public async Task WhenAddingNewTaskDateTimeShouldBeSettedAsUtcNow()
+        {
+            // Arrange
+            var existingTasks = new List<UserTask>();
+
+            _tasksRepositoryMock.Setup(x => x.GetAll()).ReturnsAsync(existingTasks);
+
+            var newTaskDto = new Faker<UserTaskDto>()
+                .RuleFor(x => x.Text, x => x.Lorem.Sentence())
+                .Generate();
+
+            var createdAt = new DateTime(2021, 3, 1, 11, 23, 44);
+            _getCurrentDateTime.Setup(x => x()).Returns(createdAt);
+
+            // Act
+            await _service.Add(newTaskDto);
+
+            // Assert
+            _tasksRepositoryMock.Verify(x => x.Add(It.Is<UserTask>(t => t.CreatedAt == createdAt)), Times.Once);
         }
 
     }

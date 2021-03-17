@@ -1,15 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DGP.Testing.App.Repositories;
 using DGP.Testing.App.Services;
 
@@ -31,6 +25,8 @@ namespace DGP.Testing.App
 
             services.AddTransient<ITasksService, TasksService>();
             services.AddTransient<ITaskRepository, TaskRepository>();
+
+            services.AddSingleton<GetCurrentDateTime>(() => DateTime.UtcNow);
 
             services.AddDbContext<TasksDbContext>();
         }

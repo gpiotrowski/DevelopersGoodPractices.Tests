@@ -5,17 +5,21 @@ using System.Threading.Tasks;
 using DGP.Testing.App.Dtos;
 using DGP.Testing.App.Models;
 using DGP.Testing.App.Repositories;
-using Microsoft.AspNetCore.Mvc;
 
 namespace DGP.Testing.App.Services
 {
+
+    public delegate DateTime GetCurrentDateTime();
+
     public class TasksService : ITasksService
     {
         private readonly ITaskRepository _taskRepository;
+        private readonly GetCurrentDateTime _getCurrentDateTime;
 
-        public TasksService(ITaskRepository taskRepository)
+        public TasksService(ITaskRepository taskRepository, GetCurrentDateTime getCurrentDateTime)
         {
             _taskRepository = taskRepository;
+            _getCurrentDateTime = getCurrentDateTime;
         }
 
         public async Task<List<UserTaskDto>> GetAll()
@@ -42,7 +46,7 @@ namespace DGP.Testing.App.Services
             {
                 Id = Guid.NewGuid(),
                 Text = newTask.Text,
-                CreatedAt = DateTime.Now
+                CreatedAt = _getCurrentDateTime()
             };
 
             await _taskRepository.Add(task);
