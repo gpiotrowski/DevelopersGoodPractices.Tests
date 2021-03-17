@@ -34,6 +34,11 @@ namespace DGP.Testing.App.IntegrationTests.Fixture
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<bool> CheckIfTaskExist(Guid taskId)
+        {
+            return await _dbContext.Tasks.AnyAsync(x => x.Id == taskId);
+        }
+
         public void Dispose()
         {
             _dbContext.Dispose();

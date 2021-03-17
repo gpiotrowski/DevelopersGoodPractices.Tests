@@ -15,7 +15,6 @@ namespace DGP.Testing.App.IntegrationTests
         private HttpClient _client;
         private AppFixture _appFixture;
 
-
         [SetUp]
         public void SetUp()
         {
@@ -66,6 +65,29 @@ namespace DGP.Testing.App.IntegrationTests
 
             // Assert
             Assert.AreEqual(1, responseData.Count);
+        }
+
+        [Test]
+        public async Task RemoveTaskShouldRemoveItFromDatabase()
+        {
+            // Arrange
+            var task = new UserTask()
+            {
+                Id = Guid.Parse("8d0f8eff-77ea-43b8-b063-9988c7b2ed23"),
+                Text = "Test task",
+                CreatedAt = DateTime.UtcNow
+            };
+            await _appFixture.GetDatabase().AddTask(task);
+
+            // Act
+            var response = await _client.DeleteAsync($"/api/tasks/{task.Id}");
+
+            response.EnsureSuccessStatusCode();
+            
+            // Assert
+            var taskExist = await _appFixture.GetDatabase().CheckIfTaskExist(task.Id);
+            Assert.False(taskExist);
+
         }
     }
 }
