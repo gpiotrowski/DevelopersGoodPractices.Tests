@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DGP.Testing.App.Dtos;
-using DGP.Testing.App.Models;
-using DGP.Testing.App.Repositories;
+using DGP.Testing.App.Services;
 
 namespace DGP.Testing.App.Controllers
 {
@@ -13,43 +11,29 @@ namespace DGP.Testing.App.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
-        private readonly ITaskRepository _taskRepository;
+        private readonly ITasksService _tasksService;
 
-        public TasksController(ITaskRepository taskRepository)
+        public TasksController(ITasksService tasksService)
         {
-            _taskRepository = taskRepository;
+            _tasksService = tasksService;
         }
 
         [HttpGet]
         public async Task<List<UserTaskDto>> GetAll()
         {
-            var tasks = await _taskRepository.GetAll();
-
-            return tasks.Select(x => new UserTaskDto()
-            {
-                Id = x.Id,
-                Text = x.Text,
-                CreatedAt = x.CreatedAt
-            }).ToList();
+            return await _tasksService.GetAll();
         }
 
         [HttpPost]
         public async Task Add(UserTaskDto newUserTask)
         {
-            var task = new UserTask()
-            {
-                Id = Guid.NewGuid(),
-                Text = newUserTask.Text,
-                CreatedAt = DateTime.Now
-            };
-
-            await _taskRepository.Add(task);
+            await _tasksService.Add(newUserTask);
         }
 
         [HttpDelete("{taskId}")]
         public async Task Delete(Guid taskId)
         {
-            await _taskRepository.Remove(taskId);
+            await _tasksService.Remove(taskId);
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DGP.Testing.App.Repositories;
+using DGP.Testing.App.Services;
 
 namespace DGP.Testing.App
 {
@@ -28,7 +29,9 @@ namespace DGP.Testing.App
         {
             services.AddControllers();
 
+            services.AddTransient<ITasksService, TasksService>();
             services.AddTransient<ITaskRepository, TaskRepository>();
+
             services.AddDbContext<TasksDbContext>();
         }
 
