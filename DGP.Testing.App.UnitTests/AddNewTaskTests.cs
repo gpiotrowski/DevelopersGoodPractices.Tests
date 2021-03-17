@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bogus;
 using DGP.Testing.App.Dtos;
 using DGP.Testing.App.Models;
 using DGP.Testing.App.Repositories;
@@ -90,6 +91,25 @@ namespace DGP.Testing.App.UnitTests
             {
                 Text = taskText
             };
+
+            // Act
+            await _service.Add(newTaskDto);
+
+            // Assert
+            _tasksRepositoryMock.Verify(x => x.Add(It.IsAny<UserTask>()), Times.Once);
+        }
+
+        [Test]
+        public async Task AddingTaskWithRandomNameShouldSaveItSuccessfully()
+        {
+            // Arrange
+            var existingTasks = new List<UserTask>();
+
+            _tasksRepositoryMock.Setup(x => x.GetAll()).ReturnsAsync(existingTasks);
+
+            var newTaskDto = new Faker<UserTaskDto>()
+                .RuleFor(x => x.Text, x => x.Lorem.Sentence())
+                .Generate();
 
             // Act
             await _service.Add(newTaskDto);
