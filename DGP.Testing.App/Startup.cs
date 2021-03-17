@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using DGP.Testing.App.Repositories;
 using DGP.Testing.App.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace DGP.Testing.App
 {
@@ -28,10 +29,7 @@ namespace DGP.Testing.App
 
             services.AddSingleton<GetCurrentDateTime>(() => DateTime.UtcNow);
 
-            services.AddDbContext<TasksDbContext>();
-
-            var databaseConfiguration = new DatabaseConfiguration() {ConnectionString = Configuration.GetConnectionString("TasksDb") };
-            services.AddSingleton<DatabaseConfiguration>(databaseConfiguration);
+            services.AddDbContext<TasksDbContext>(x => x.UseSqlite(Configuration.GetConnectionString("TasksDb")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
