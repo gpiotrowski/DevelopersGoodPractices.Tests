@@ -29,6 +29,9 @@ namespace DGP.Testing.App
             services.AddSingleton<GetCurrentDateTime>(() => DateTime.UtcNow);
 
             services.AddDbContext<TasksDbContext>();
+
+            var databaseConfiguration = new DatabaseConfiguration() {ConnectionString = Configuration.GetConnectionString("TasksDb") };
+            services.AddSingleton<DatabaseConfiguration>(databaseConfiguration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
